@@ -33,6 +33,10 @@ export default function HomeScreen() {
     });
   }, []);
 
+  useEffect(() => {
+    console.log("auth: ", firebase.auth());
+  }, []);
+
   const handleDelete = message => {
     db.collection("messages")
       .doc(message.id)
