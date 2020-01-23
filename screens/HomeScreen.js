@@ -18,6 +18,8 @@ import db from "../db.js";
 import firebase from "firebase/app";
 import "firebase/auth";
 
+import Message from "./Message.js";
+
 export default function HomeScreen() {
   const [messages, setMessages] = useState([]);
   const [to, setTo] = React.useState("");
@@ -34,12 +36,6 @@ export default function HomeScreen() {
       setMessages([...messages]);
     });
   }, []);
-
-  const handleDelete = message => {
-    db.collection("messages")
-      .doc(message.id)
-      .delete();
-  };
 
   const handleSend = () => {
     const from = firebase.auth().currentUser.uid;
@@ -61,6 +57,10 @@ export default function HomeScreen() {
     setId(message.id);
   };
 
+  const handleLogout = () => {
+    firebase.auth().signOut();
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -69,13 +69,7 @@ export default function HomeScreen() {
         keyboardShouldPersistTaps="always"
       >
         {messages.map((message, i) => (
-          <View key={i}>
-            <Text style={styles.getStartedText}>
-              {message.from} - {message.to} - {message.text}
-            </Text>
-            <Button title="Delete" onPress={() => handleDelete(message)} />
-            <Button title="Edit" onPress={() => handleEdit(message)} />
-          </View>
+          <Message key={i} message={message} handleEdit={handleEdit} />
         ))}
       </ScrollView>
       <TextInput
@@ -91,6 +85,9 @@ export default function HomeScreen() {
         value={text}
       />
       <Button title="Send" onPress={handleSend} />
+      <View>
+        <Button title="Logout" onPress={handleLogout} />
+      </View>
     </View>
   );
 }
