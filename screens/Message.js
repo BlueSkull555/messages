@@ -19,18 +19,18 @@ import "firebase/database";
 import db from "../db.js";
 
 export default ({ message, handleEdit }) => {
-  const [from, setFrom] = useState(null);
+  const [user, setUser] = useState(null);
 
-  const handleSet = async () => {
-    const info = await db
+  const handleUser = async () => {
+    const snap = await db
       .collection(`users`)
       .doc(message.from)
-      .get(snapShot => {
-        console.log("message.from info", snapShot.data());
-      });
+      .get();
+    console.log("message.from info", snap.data());
+    setUser(snap.data());
   };
   useEffect(() => {
-    handleSet();
+    handleUser();
   }, []);
 
   const handleDelete = message => {
@@ -40,13 +40,19 @@ export default ({ message, handleEdit }) => {
   };
 
   return (
-    <>
-      <Text style={styles.getStartedText}>
-        {message.from} - {message.to} - {message.text}
-      </Text>
-      <Button title="Delete" onPress={() => handleDelete(message)} />
-      <Button title="Edit" onPress={() => handleEdit(message)} />
-    </>
+    user && (
+      <View style={{ paddingTop: 50, flexDirection: "row" }}>
+        <Image
+          style={{ width: 50, height: 50 }}
+          source={{ uri: user.photoURL }}
+        />
+        <Text style={styles.getStartedText}>
+          {user.displayName} - {message.to} - {message.text}
+        </Text>
+        <Button title="Edit" onPress={() => handleEdit(message)} />
+        <Button title="X" onPress={() => handleDelete(message)} />
+      </View>
+    )
   );
 };
 

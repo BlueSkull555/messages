@@ -1,20 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Text, TextInput, Button } from "react-native";
+import { StyleSheet, View, Text, TextInput, Button, Image } from "react-native";
 import firebase from "firebase/app";
 import "firebase/auth";
 import db from "../db";
+import * as ImagePicker from "expo-image-picker";
 
 export default function SettingsScreen() {
+  const [hasCameraRollPermission, setHasCameraRollPermission] = useState(false);
   const [displayName, setDisplayName] = useState("");
   const [photoURL, setPhotoURL] = useState("");
 
+  const askPermission = async () => {
+    const { status } = await ImagePicker.requestCameraRollPermissionsAsync();
+    setHasCameraRollPermission(status === "granted");
+  };
+
+  useEffect(() => {
+    askPermission();
+  }, []);
+
   const handleSet = async () => {
-    const info = await db
+    const snap = await db
       .collection("users")
       .doc(firebase.auth().currentUser.uid)
       .get();
-    setDisplayName(info.displayName);
-    setPhotoURL(info.photoURL);
+    setDisplayName(snap.data().displayName);
+    setPhotoURL(snap.data().photoURL);
   };
   useEffect(() => {
     // setDisplayName(firebase.auth().currentUser.displayName);
@@ -26,11 +37,22 @@ export default function SettingsScreen() {
     //firebase.auth().currentUser.updateProfile({ displayName, photoURL });
     db.collection("users")
       .doc(firebase.auth().currentUser.uid)
-      .update({ displayName, photoURL });
+      .set({ displayName, photoURL });
+    handleSet();
+  };
+
+  const handlePickImage = () => {
+    // show camera roll, allow user to select, set photoURL
+    // - use firebase storage
+    // - upload selected image to default bucket, naming with uid
+    // - get url and set photoURL
   };
 
   return (
     <View style={styles.container}>
+      {photoURL !== "" && (
+        <Image style={{ width: 100, height: 100 }} source={{ uri: photoURL }} />
+      )}
       <TextInput
         style={{
           height: 40,
@@ -53,6 +75,7 @@ export default function SettingsScreen() {
         placeholder="Photo URL"
         value={photoURL}
       />
+      <Button title="Pick Image" onPress={handlePickImage} />
       <Button title="Save" onPress={handleSave} />
     </View>
   );
