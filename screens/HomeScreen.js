@@ -20,6 +20,8 @@ import "firebase/auth";
 
 import Message from "./Message.js";
 
+import MapView from "react-native-maps";
+
 export default function HomeScreen() {
   const [messages, setMessages] = useState([]);
   const [to, setTo] = React.useState("");
@@ -88,6 +90,7 @@ export default function HomeScreen() {
       <View>
         <Button title="Logout" onPress={handleLogout} />
       </View>
+      
     </View>
   );
 }

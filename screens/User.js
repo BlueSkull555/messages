@@ -18,44 +18,19 @@ import "firebase/auth";
 import "firebase/database";
 import db from "../db.js";
 
-export default ({ message, handleEdit }) => {
-  const [user, setUser] = useState(null);
-
-  const handleUser = () => {
-    const snap = db
-      .collection(`users`)
-      .doc(message.from)
-      .onSnapshot(docSnapshot => {
-        console.log("user snapshot", docSnapshot.data());
-        setUser(docSnapshot.data());
-      });
-  };
-  useEffect(() => {
-    handleUser();
-  }, []);
-
-  const handleDelete = message => {
-    db.collection("messages")
-      .doc(message.id)
-      .delete();
-  };
-
+export default function User(props) {
   return (
-    user && (
+    props.user && (
       <View style={{ paddingTop: 50, flexDirection: "row" }}>
         <Image
           style={{ width: 50, height: 50 }}
-          source={{ uri: user.photoURL }}
+          source={{ uri: props.user.photoURL }}
         />
-        <Text style={styles.getStartedText}>
-          {user.displayName} - {message.to} - {message.text}
-        </Text>
-        <Button title="Edit" onPress={() => handleEdit(message)} />
-        <Button title="X" onPress={() => handleDelete(message)} />
+        <Text style={styles.getStartedText}>{props.user.displayName}</Text>
       </View>
     )
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
