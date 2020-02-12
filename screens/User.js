@@ -12,12 +12,6 @@ import {
   TextInput
 } from "react-native";
 
-import { MonoText } from "../components/StyledText";
-import firebase from "firebase/app";
-import "firebase/auth";
-import "firebase/database";
-import db from "../db.js";
-
 export default function User(props) {
   return (
     props.user && (
@@ -26,7 +20,35 @@ export default function User(props) {
           style={{ width: 50, height: 50 }}
           source={{ uri: props.user.photoURL }}
         />
-        <Text style={styles.getStartedText}>{props.user.displayName}</Text>
+        <Text>{props.user.displayName}</Text>
+        <View style={{ justifyContent: "center", alignItems: "flex-end" }}>
+          {props.handleAdd ? (
+            <View style={{ flexDirection: "row" }}>
+              <Button
+                title="Add Friend"
+                onPress={() => props.handleAdd(props.user)}
+              />
+              <Button
+                title="Block"
+                onPress={() => props.handleBlock(props.user)}
+              />
+            </View>
+          ) : props.handleRemoveBlock ? (
+            <View style={{ flexDirection: "row" }}>
+              <Button
+                title="Remove Block"
+                onPress={() => props.handleRemoveBlock(props.user)}
+              />
+            </View>
+          ) : (
+            <View style={{ flexDirection: "row" }}>
+              <Button
+                title="Remove Friend"
+                onPress={() => props.handleRemove(props.user)}
+              />
+            </View>
+          )}
+        </View>
       </View>
     )
   );
